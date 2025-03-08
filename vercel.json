@@ -1,0 +1,28 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/server.js"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production",
+    "PORT": "4001",
+    "MONGODB_URI": "mongodb+srv://sai:SAINIKHIL1302@cluster0.z8lfs.mongodb.net/test",
+    "FRONTEND_URL": "https://your-frontend-url.vercel.app"
+  },
+  "regions": ["bom1"],
+  "functions": {
+    "api/**/*.js": {
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  }
+} 
