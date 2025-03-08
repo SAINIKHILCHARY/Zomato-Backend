@@ -13,22 +13,22 @@ const generateToken = (id) => {
 // @route   POST /signup
 // @access  Public
 export const signup = async (req, res) => {
-    try {
+  try {
         const { username, email, password } = req.body;
 
         // Validate input
         if (!username || !email || !password) {
-            return res.status(400).json({
-                success: false,
+      return res.status(400).json({
+        success: false,
                 message: 'Please provide all required fields'
-            });
-        }
+      });
+    }
 
         // Validate email format
         const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
         if (!emailRegex.test(email)) {
-            return res.status(400).json({
-                success: false,
+      return res.status(400).json({
+        success: false,
                 message: 'Please provide a valid email address'
             });
         }
@@ -41,17 +41,17 @@ export const signup = async (req, res) => {
             });
         }
 
-        // Check if user already exists
+      // Check if user already exists
         const userExists = await User.findOne({ $or: [{ email }, { username }] });
         if (userExists) {
-            return res.status(400).json({
-                success: false,
+        return res.status(400).json({
+          success: false,
                 message: 'User already exists with this email or username'
-            });
-        }
+        });
+      }
 
-        // Create user
-        const user = await User.create({
+      // Create user
+      const user = await User.create({
             username,
             email,
             password
@@ -61,25 +61,25 @@ export const signup = async (req, res) => {
             // Log successful creation
             console.log('User created successfully:', { username, email });
             
-            res.status(201).json({
-                success: true,
-                message: 'Registration successful',
+      res.status(201).json({
+        success: true,
+        message: 'Registration successful',
                 token: generateToken(user._id),
-                user: {
+        user: {
                     id: user._id,
-                    username: user.username,
-                    email: user.email
-                }
-            });
+          username: user.username,
+          email: user.email
         }
-    } catch (error) {
-        console.error('Signup error:', error);
-        
-        // Handle mongoose validation errors
-        if (error.name === 'ValidationError') {
-            const messages = Object.values(error.errors).map(err => err.message);
-            return res.status(400).json({
-                success: false,
+      });
+        }
+  } catch (error) {
+    console.error('Signup error:', error);
+    
+    // Handle mongoose validation errors
+    if (error.name === 'ValidationError') {
+      const messages = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({
+        success: false,
                 message: messages.join(', ')
             });
         }
@@ -90,30 +90,30 @@ export const signup = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: `${field} already exists`
-            });
-        }
-
-        res.status(500).json({
-            success: false,
-            message: 'Error occurred during registration. Please try again.'
-        });
+      });
     }
+
+    res.status(500).json({
+      success: false,
+            message: 'Error occurred during registration. Please try again.'
+    });
+  }
 };
 
 // @desc    Login user
 // @route   POST /login
 // @access  Public
 export const login = async (req, res) => {
-    try {
+  try {
         const { username, password } = req.body;
-
-        // Find user
+    
+    // Find user
         const user = await User.findOne({ username });
         
         // Check if user exists and password matches
         if (user && (await user.matchPassword(password))) {
-            res.json({
-                success: true,
+    res.json({
+      success: true,
                 message: 'Login successful',
                 token: generateToken(user._id),
                 user: {
@@ -123,16 +123,16 @@ export const login = async (req, res) => {
                 }
             });
         } else {
-            res.status(401).json({
-                success: false,
+    res.status(401).json({
+      success: false,
                 message: 'Invalid username or password'
             });
         }
-    } catch (error) {
+  } catch (error) {
         console.error('Login error:', error);
-        res.status(500).json({
-            success: false,
+    res.status(500).json({
+      success: false,
             message: error.message || 'Error occurred during login'
-        });
-    }
+    });
+  }
 };
